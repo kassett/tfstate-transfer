@@ -1,0 +1,45 @@
+name: Push
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  prepare:
+    name: Push
+    permissions: 'write-all'
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push new tag
+        shell: bash
+        run: |
+          # Function to increment the version
+          increment_version() {
+            local version=$1
+            local major minor patch
+            IFS='.' read -r major minor patch <<< "$version"
+            patch=$((patch + 1))
+            echo "$major.$minor.$patch"
+          }
+          
+          # Fetch the latest tag from the remote repository
+          latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
+          
+          # Check if the latest tag is empty (no tags exist)
+          if [ -z "$latest_tag" ]; then
+            # If no tags exist, start with version 0.1.0
+            new_version="0.1.0"
+          else
+            # Increment the version
+            new_version=$(increment_version "$latest_tag")
+          fi
+          
+          git tag $new_version
+          git push origin $new_version

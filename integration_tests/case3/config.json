@@ -1,0 +1,22 @@
+{
+  "sourceDir": "source",
+  "targetDir": "target",
+  "resources": [
+    {
+      "source": "module.table_simple",
+      "target": "module.table_simple"
+    },
+    {
+      "source": "module.table_count[0]",
+      "target": "module.table_count[0]"
+    },
+    {
+      "source": "module.table_count[2]",
+      "target": "module.table_count[2]"
+    },
+    {
+      "source": "module.table_foreach[\"1\"]",
+      "target": "module.table_foreach[\"1\"]"
+    }
+  ]
+}

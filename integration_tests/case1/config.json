@@ -1,0 +1,18 @@
+{
+  "sourceDir": "source",
+  "targetDir": "target",
+  "resources": [
+    {
+      "source": "aws_secretsmanager_secret.this",
+      "target": "aws_secretsmanager_secret.this"
+    },
+    {
+      "source": "aws_secretsmanager_secret_version.this",
+      "target": "aws_secretsmanager_secret_version.this"
+    },
+    {
+      "source": "aws_dynamodb_table.this",
+      "target": "aws_dynamodb_table.this"
+    }
+  ]
+}

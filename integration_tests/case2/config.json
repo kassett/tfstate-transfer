@@ -1,0 +1,38 @@
+{
+  "sourceDir": "source",
+  "targetDir": "target",
+  "resources": [
+    {
+      "source": "aws_secretsmanager_secret.iterate_count[0]",
+      "target": "aws_secretsmanager_secret.iterate_count[0]"
+    },
+    {
+      "source": "aws_secretsmanager_secret.iterate_count[1]",
+      "target": "aws_secretsmanager_secret.iterate_count[1]"
+    },
+    {
+      "source": "aws_secretsmanager_secret.iterate_count[2]",
+      "target": "aws_secretsmanager_secret.iterate_count[2]"
+    },
+    {
+      "source": "aws_secretsmanager_secret_version.iterate_count[0]",
+      "target": "aws_secretsmanager_secret_version.iterate_count[0]"
+    },
+    {
+      "source": "aws_secretsmanager_secret_version.iterate_count[1]",
+      "target": "aws_secretsmanager_secret_version.iterate_count[1]"
+    },
+    {
+      "source": "aws_secretsmanager_secret_version.iterate_count[2]",
+      "target": "aws_secretsmanager_secret_version.iterate_count[2]"
+    },
+    {
+      "source": "aws_secretsmanager_secret.iterate_foreach[\"one\"]",
+      "target": "aws_secretsmanager_secret.iterate_foreach[\"one\"]"
+    },
+    {
+      "source": "aws_secretsmanager_secret_version.iterate_foreach[\"one\"]",
+      "target": "aws_secretsmanager_secret_version.iterate_foreach[\"one\"]"
+    }
+  ]
+}
