@@ -1,0 +1,10 @@
+{
+  "sourceDir": "source",
+  "targetDir": "target",
+  "resources": [
+    {
+      "source": "aws_kinesis_stream.this",
+      "target": "aws_kinesis_stream.this"
+    }
+  ]
+}

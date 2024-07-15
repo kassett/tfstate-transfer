@@ -1,0 +1,14 @@
+services:
+
+  localstack:
+    # Localstack allows mocking of most AWS services
+    image: localstack/localstack:latest
+    environment:
+      AWS_ACCESS_KEY_ID: localstack
+      AWS_SECRET_ACCESS_KEY: localstack
+      AWS_DEFAULT_REGION: us-east-1
+    ports:
+      - "4500-4600:4500-4600"
+    volumes:
+      - "/tmp/localstack:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"

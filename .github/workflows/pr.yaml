@@ -1,0 +1,40 @@
+name: Format, Lint, Test
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  prepare:
+    name: Format, Lint, Test
+    permissions: 'write-all'
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Docker Compose
+        uses: ndeloof/install-compose-action@v0.0.1
+        with:
+          version: v2.1.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Setup Golang
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          check-latest: true
+
+      - name: Setup docker compose
+        shell: bash
+        run: docker-compose up -d
+
+      - name: Run tests
+        shell: bash
+        run: go test ./src -v

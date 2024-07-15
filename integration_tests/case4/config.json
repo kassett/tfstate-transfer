@@ -1,0 +1,10 @@
+{
+  "sourceDir": "source",
+  "targetDir": "target",
+  "resources": [
+    {
+      "source": "local_file.this",
+      "target": "local_file.this"
+    }
+  ]
+}
