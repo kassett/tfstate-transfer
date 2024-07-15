@@ -1,7 +1,7 @@
 //go:build tests
 // +build tests
 
-package main
+package internal
 
 import (
 	"bytes"
@@ -168,7 +168,7 @@ func initializeTerraformTest(tempDir string) error {
 			cmd.Dir = dir
 			_, err = cmd.CombinedOutput()
 			if err != nil {
-				fmt.Println("Failed to apply the resources...")
+				fmt.Println("Failed to apply the Resources...")
 				return err
 			}
 		}
@@ -186,8 +186,8 @@ func TestMain(m *testing.M) {
 }
 
 func TestCase1(t *testing.T) {
-	// In Case1, we want to test a simple transfer of 2 resources
-	// There is no fancy logic, just 2 of three resources transferred
+	// In Case1, we want to test a simple transfer of 2 Resources
+	// There is no fancy logic, just 2 of three Resources transferred
 	// from one environment to another
 	tempDir := setupTerraformTest("case1")
 	err := initializeTerraformTest(tempDir)
@@ -202,13 +202,13 @@ func TestCase1(t *testing.T) {
 	sourcePlan, targetPlan := terraformPlanForCase(tempDir)
 
 	assert.Contains(t, sourcePlan,
-		"3 to add", "Expected the source plan to want to add 3 resources")
+		"3 to add", "Expected the source plan to want to add 3 Resources")
 	assert.Contains(t, targetPlan,
-		"0 to add", "Expected the target plan to want to add 0 resources")
+		"0 to add", "Expected the target plan to want to add 0 Resources")
 }
 
 func TestCase2(t *testing.T) {
-	// In Case2, we want to test transferring resources with multiple
+	// In Case2, we want to test transferring Resources with multiple
 	// instances. This can either be a simple count or a for_each loop
 
 	// Additionally, we do a sneaky thing and check that
@@ -227,9 +227,9 @@ func TestCase2(t *testing.T) {
 	sourcePlan, targetPlan := terraformPlanForCase(tempDir)
 
 	assert.Contains(t, sourcePlan,
-		"8 to add", "Expected the source plan to want to add 8 resources")
+		"8 to add", "Expected the source plan to want to add 8 Resources")
 	assert.Contains(t, targetPlan,
-		"3 to add", "Expected the target plan to want to add 3 resources")
+		"3 to add", "Expected the target plan to want to add 3 Resources")
 }
 
 func TestCase3(t *testing.T) {
@@ -249,9 +249,9 @@ func TestCase3(t *testing.T) {
 	sourcePlan, targetPlan := terraformPlanForCase(tempDir)
 
 	assert.Contains(t, sourcePlan,
-		"4 to add", "Expected the source plan to want to add 4 resources")
+		"4 to add", "Expected the source plan to want to add 4 Resources")
 	assert.Contains(t, targetPlan,
-		"2 to add", "Expected the target plan to want to add 2 resources")
+		"2 to add", "Expected the target plan to want to add 2 Resources")
 }
 
 func TestCase4(t *testing.T) {
@@ -272,7 +272,7 @@ func TestCase4(t *testing.T) {
 	assert.Contains(t, sourcePlan,
 		"no changes are needed", "Expected the state not to change.")
 	assert.Contains(t, targetPlan,
-		"1 to add", "Expected the target plan to want to add 1 resources")
+		"1 to add", "Expected the target plan to want to add 1 Resources")
 }
 
 func TestCase5(t *testing.T) {
@@ -292,7 +292,7 @@ func TestCase5(t *testing.T) {
 	sourcePlan, targetPlan := terraformPlanForCase(tempDir)
 
 	assert.Contains(t, sourcePlan,
-		"1 to add", "Expected the source plan to want to add 1 resources")
+		"1 to add", "Expected the source plan to want to add 1 Resources")
 	assert.Contains(t, targetPlan,
 		"no changes are needed", "Expected the state not to change.")
 }

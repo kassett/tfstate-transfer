@@ -30,7 +30,8 @@ jobs:
           }
           
           # Fetch the latest tag from the remote repository
-          latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
+          latest_tag=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null)
+          
           
           # Check if the latest tag is empty (no tags exist)
           if [ -z "$latest_tag" ]; then
