@@ -1,4 +1,4 @@
-package main
+package internal
 
 import (
 	"encoding/json"
@@ -29,12 +29,12 @@ type ImportRunResult struct {
 }
 
 type RunHandler struct {
-	// Maps the name of the resources the user defined
-	// To all the resources it potentially contains
+	// Maps the name of the Resources the user defined
+	// To all the Resources it potentially contains
 	topLevelResourceMapping map[string][]string
 
-	// Maps the names of the resources from the source state
-	// to the names of the resources in the target state
+	// Maps the names of the Resources from the source state
+	// to the names of the Resources in the target state
 	sourceTargetNameMapping map[string]string
 
 	// Maps the full path of the SOURCE state resource
@@ -42,7 +42,7 @@ type RunHandler struct {
 	// that could potentially be used to import the resource
 	resourceIdentifiers map[string]*ImportObject
 
-	// The next resources to be imported
+	// The next Resources to be imported
 	resourcesToImport *Stack
 
 	// The list of imports that have completed (not necessarily successfully)
@@ -167,7 +167,7 @@ func NewRunHandler(stateFileContent string, resourceMapping map[string]string) *
 }
 
 func (rn *RunHandler) HasNextResource() bool {
-	// Check the stack to see if there are more resources that need to be imported
+	// Check the stack to see if there are more Resources that need to be imported
 	if rn.resourcesToImport.IsEmpty() {
 		return false
 	}
@@ -203,7 +203,7 @@ func (rn *RunHandler) GetNextResource() (*ImportObject, error) {
 }
 
 func (rn *RunHandler) ResourcesToDelete() []string {
-	// Check which resources can be deleted
+	// Check which Resources can be deleted
 	parentsToDelete := make([]string, 0)
 	for parent, children := range rn.topLevelResourceMapping {
 

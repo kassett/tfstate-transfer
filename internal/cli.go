@@ -1,9 +1,8 @@
-package main
+package internal
 
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/spf13/cobra"
 	"io/ioutil"
 	"log"
 	"os"
@@ -17,17 +16,17 @@ type Resource struct {
 }
 
 type ConfigFile struct {
-	SourceDir string     `json:"sourceDir"`
-	TargetDir string     `json:"targetDir"`
+	SourceDir string     `json:"SourceDir"`
+	TargetDir string     `json:"TargetDir"`
 	Resources []Resource `json:"resources"`
 }
 
 var (
-	resources  []string
-	sourceDir  string
-	targetDir  string
-	configFile string
-	dryRun     bool
+	Resources      []string
+	SourceDir      string
+	TargetDir      string
+	ConfigFileName string
+	DryRun         bool
 )
 
 func unmarshallConfig(configFile string) (string, string, []string, map[string]string) {
@@ -90,50 +89,22 @@ func checkPath(dir string) string {
 	return path
 }
 
-func parseArguments() (string, string, map[string]string, bool) {
+func ParseArguments() (string, string, map[string]string, bool) {
 	var resourceMapping map[string]string
 
-	if configFile != "" {
-		sourceDir, targetDir, resources, resourceMapping = unmarshallConfig(configFile)
+	if ConfigFileName != "" {
+		SourceDir, TargetDir, Resources, resourceMapping = unmarshallConfig(ConfigFileName)
 	} else {
-		resources, resourceMapping = pullAliasesOutFromCli(resources)
+		Resources, resourceMapping = pullAliasesOutFromCli(Resources)
 	}
 
-	if sourceDir == "" || targetDir == "" {
+	if SourceDir == "" || TargetDir == "" {
 		fmt.Println("Both a source directory and a target directory must be specified.")
 	}
 
-	if len(resources) == 0 {
+	if len(Resources) == 0 {
 		fmt.Println("Resources must be specified.")
 	}
 
-	return sourceDir, targetDir, resourceMapping, dryRun
-}
-
-var rootCmd = &cobra.Command{
-	Use:   "tfstate-transfer",
-	Short: "A simple CLI tool for transferring resources between Terraform environments.",
-	Run: func(cmd *cobra.Command, args []string) {
-		sourceDir, targetDir, resourceMapping, dryRun := parseArguments()
-		fmt.Printf("Source Directory: %s\n", sourceDir)
-		fmt.Printf("Target Directory: %s\n", targetDir)
-		fmt.Printf("Resources: %v\n", resourceMapping)
-		fmt.Printf("Dry Run: %v\n", dryRun)
-		Run(sourceDir, targetDir, resourceMapping, dryRun)
-	},
-}
-
-func init() {
-	rootCmd.PersistentFlags().StringVar(&sourceDir, "source-dir", "", "Source directory")
-	rootCmd.PersistentFlags().StringVar(&targetDir, "target-dir", "", "Target directory")
-	rootCmd.PersistentFlags().StringVar(&configFile, "config-file", "", "Path to the configuration file")
-	rootCmd.PersistentFlags().StringArrayVar(&resources, "r", []string{}, "List of resources.")
-	rootCmd.PersistentFlags().BoolVar(&dryRun, "dry-run", false, "Perform a dry run without making any changes")
-}
-
-func main() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	return SourceDir, TargetDir, resourceMapping, DryRun
 }

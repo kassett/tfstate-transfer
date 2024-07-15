@@ -1,4 +1,4 @@
-package main
+package internal
 
 func transferState(rn *RunHandler, sourceDir string, targetDir string, dryRun bool) {
 	for rn.HasNextResource() {
