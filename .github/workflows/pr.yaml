@@ -37,4 +37,6 @@ jobs:
 
       - name: Run tests
         shell: bash
-        run: go test ./internal -v --tags tests
+        run: |
+          go test ./internal -v
+          go test ./tests -v

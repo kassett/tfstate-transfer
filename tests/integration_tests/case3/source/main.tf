@@ -12,18 +12,18 @@ locals {
 }
 
 module "table_simple" {
-  source = "./table"
+  source = "table"
   name = "case3"
 }
 
 module "table_count" {
   count = length(local.secret_names)
-  source = "./table"
+  source = "table"
   name = "case3-${local.secret_names[count.index]}"
 }
 
 module "table_foreach" {
   for_each = local.foreach_secrets
-  source = "./table"
+  source = "table"
   name = "case3-${each.value}"
 }

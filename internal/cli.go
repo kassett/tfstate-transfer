@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -29,23 +28,11 @@ var (
 	DryRun         bool
 )
 
-func unmarshallConfig(configFile string) (string, string, []string, map[string]string) {
-	file, err := os.Open(configFile)
-	if err != nil {
-		os.Exit(1)
-	}
-
-	byteValue, err := ioutil.ReadAll(file)
-	if err != nil {
-		fmt.Println("Error reading file:", err)
-		os.Exit(1)
-	}
-
+func UnmarshallConfigFileContent(configFileContent string) (string, string, []string, map[string]string) {
 	var config ConfigFile
-	err = json.Unmarshal(byteValue, &config)
+	err := json.Unmarshal([]byte(configFileContent), &config)
 	if err != nil {
-		fmt.Println("Error unmarshalling JSON file: ", err)
-		os.Exit(1)
+		Panic(fmt.Sprintf("The configuration file %s is not a valid JSON.", configFileContent))
 	}
 
 	var resourceList []string
@@ -59,7 +46,20 @@ func unmarshallConfig(configFile string) (string, string, []string, map[string]s
 	return config.SourceDir, config.TargetDir, resourceList, resourceMapping
 }
 
-func pullAliasesOutFromCli(resources []string) ([]string, map[string]string) {
+func OpenConfigFile(configFilePath string) string {
+	file, err := os.Open(configFilePath)
+	if err != nil {
+		Panic(fmt.Sprintf("The configuration file %s does not exist.", configFilePath))
+	}
+
+	byteValue, err := ioutil.ReadAll(file)
+	if err != nil {
+		Panic(fmt.Sprintf("The configuration file %s could not be read..", configFilePath))
+	}
+	return string(byteValue)
+}
+
+func PullAliasesOutFromCli(resources []string) ([]string, map[string]string) {
 	newResourceList := make([]string, 0)
 	resourceMapping := make(map[string]string)
 
@@ -68,7 +68,6 @@ func pullAliasesOutFromCli(resources []string) ([]string, map[string]string) {
 			splitResource := strings.SplitN(resource, ":", 2)
 			originalResource := splitResource[0]
 			newResource := splitResource[1]
-			newResourceList = append(newResourceList, newResource)
 			resourceMapping[originalResource] = newResource
 			newResourceList = append(newResourceList, originalResource)
 		} else {
@@ -83,7 +82,7 @@ func pullAliasesOutFromCli(resources []string) ([]string, map[string]string) {
 func checkPath(dir string) string {
 	_, err := os.Stat(dir)
 	if err != nil {
-		log.Fatal(fmt.Errorf("the file %s does not exist", dir))
+		Panic(fmt.Sprintf("The directory %s does not exist.", dir))
 	}
 	path, _ := filepath.Abs(dir)
 	return path
@@ -93,17 +92,18 @@ func ParseArguments() (string, string, map[string]string, bool) {
 	var resourceMapping map[string]string
 
 	if ConfigFileName != "" {
-		SourceDir, TargetDir, Resources, resourceMapping = unmarshallConfig(ConfigFileName)
+		configFileContent := OpenConfigFile(ConfigFileName)
+		SourceDir, TargetDir, Resources, resourceMapping = UnmarshallConfigFileContent(configFileContent)
 	} else {
-		Resources, resourceMapping = pullAliasesOutFromCli(Resources)
+		Resources, resourceMapping = PullAliasesOutFromCli(Resources)
 	}
 
 	if SourceDir == "" || TargetDir == "" {
-		fmt.Println("Both a source directory and a target directory must be specified.")
+		Panic("Both a source directory and a target directory must be specified.")
 	}
 
 	if len(Resources) == 0 {
-		fmt.Println("Resources must be specified.")
+		Panic("A list of resources must be specified, either via the configuration file or using --r.")
 	}
 
 	return SourceDir, TargetDir, resourceMapping, DryRun
