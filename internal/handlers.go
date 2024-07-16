@@ -50,6 +50,9 @@ type RunHandler struct {
 
 	// The results of the run for output
 	importResults []ImportRunResult
+
+	// fatal error
+	fatal error
 }
 
 func checkIfResourceBelongsToState(resourceName string, resourceMapping map[string]string) (bool, string, string) {
@@ -238,6 +241,14 @@ func (rn *RunHandler) ReportImportRun(sourceResourceName string,
 
 	rn.completedImports[sourceResourceName] = importRunResult.success
 	rn.importResults = append(rn.importResults, importRunResult)
+}
+
+func Panic(fatalError string) {
+	red := fmt.Sprintf("\033[%dm", tablewriter.FgRedColor)
+	reset := "\033[0m"
+
+	fmt.Println(red + fatalError + reset)
+	os.Exit(1)
 }
 
 func (rn *RunHandler) FinishRun() {

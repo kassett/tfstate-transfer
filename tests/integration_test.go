@@ -1,11 +1,9 @@
-//go:build tests
-// +build tests
-
-package internal
+package tests
 
 import (
 	"bytes"
 	"fmt"
+	"github.com/kassett/tfstate-transfer/internal"
 	"io"
 	"log"
 	"net/http"
@@ -80,7 +78,7 @@ func teardown() {
 
 func setupTerraformTest(baseDirName string) string {
 	currentDir, _ := filepath.Abs(func() string { _, file, _, _ := runtime.Caller(0); return file }())
-	integrationTestDir := filepath.Dir(filepath.Dir(currentDir))
+	integrationTestDir := filepath.Dir(currentDir)
 	testDir := filepath.Join(filepath.Join(integrationTestDir, "integration_tests"), baseDirName)
 
 	tempDir, err := os.MkdirTemp("/tmp", "tempDir-")
@@ -196,8 +194,9 @@ func TestCase1(t *testing.T) {
 	}
 
 	configFile := filepath.Join(tempDir, "config.json")
-	sourceDir, targetDir, _, resourceMapping := unmarshallConfig(configFile)
-	Run(sourceDir, targetDir, resourceMapping, false)
+	configFileContent := internal.OpenConfigFile(configFile)
+	sourceDir, targetDir, _, resourceMapping := internal.UnmarshallConfigFileContent(configFileContent)
+	internal.Run(sourceDir, targetDir, resourceMapping, false)
 
 	sourcePlan, targetPlan := terraformPlanForCase(tempDir)
 
@@ -221,8 +220,9 @@ func TestCase2(t *testing.T) {
 	}
 
 	configFile := filepath.Join(tempDir, "config.json")
-	sourceDir, targetDir, _, resourceMapping := unmarshallConfig(configFile)
-	Run(sourceDir, targetDir, resourceMapping, false)
+	configFileContent := internal.OpenConfigFile(configFile)
+	sourceDir, targetDir, _, resourceMapping := internal.UnmarshallConfigFileContent(configFileContent)
+	internal.Run(sourceDir, targetDir, resourceMapping, false)
 
 	sourcePlan, targetPlan := terraformPlanForCase(tempDir)
 
@@ -243,8 +243,9 @@ func TestCase3(t *testing.T) {
 	}
 
 	configFile := filepath.Join(tempDir, "config.json")
-	sourceDir, targetDir, _, resourceMapping := unmarshallConfig(configFile)
-	Run(sourceDir, targetDir, resourceMapping, false)
+	configFileContent := internal.OpenConfigFile(configFile)
+	sourceDir, targetDir, _, resourceMapping := internal.UnmarshallConfigFileContent(configFileContent)
+	internal.Run(sourceDir, targetDir, resourceMapping, false)
 
 	sourcePlan, targetPlan := terraformPlanForCase(tempDir)
 
@@ -264,8 +265,9 @@ func TestCase4(t *testing.T) {
 	}
 
 	configFile := filepath.Join(tempDir, "config.json")
-	sourceDir, targetDir, _, resourceMapping := unmarshallConfig(configFile)
-	Run(sourceDir, targetDir, resourceMapping, false)
+	configFileContent := internal.OpenConfigFile(configFile)
+	sourceDir, targetDir, _, resourceMapping := internal.UnmarshallConfigFileContent(configFileContent)
+	internal.Run(sourceDir, targetDir, resourceMapping, false)
 
 	sourcePlan, targetPlan := terraformPlanForCase(tempDir)
 
@@ -286,8 +288,9 @@ func TestCase5(t *testing.T) {
 	}
 
 	configFile := filepath.Join(tempDir, "config.json")
-	sourceDir, targetDir, _, resourceMapping := unmarshallConfig(configFile)
-	Run(sourceDir, targetDir, resourceMapping, false)
+	configFileContent := internal.OpenConfigFile(configFile)
+	sourceDir, targetDir, _, resourceMapping := internal.UnmarshallConfigFileContent(configFileContent)
+	internal.Run(sourceDir, targetDir, resourceMapping, false)
 
 	sourcePlan, targetPlan := terraformPlanForCase(tempDir)
 
