@@ -38,5 +38,5 @@ jobs:
       - name: Run tests
         shell: bash
         run: |
-          go test -v
+          go test ./internal -v
           go test ./tests -v
