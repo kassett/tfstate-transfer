@@ -1,23 +1,8 @@
 # tfstate-transfer
 
 `tfstate-transfer` is a CLI tool for transferring Terraform resources from one environment to another. 
-<<<<<<< HEAD
 This tool simplifies the process of moving state files and resources between different Terraform workspaces or environments, 
 making it easier to manage infrastructure changes and migrations.
-
-## Installation
-
-To install `tfstate-transfer`, you need to have Go installed. Then, you can build and install the tool using the following commands:
-
-```bash
-go install github.com/yourusername/tfstate-transfer
-```
-
-## Usage
-There are two ways to use the tfstate-transfer program. The first
-=======
-This tool eases the pain that developers experience when moving to a new Terraform environment, requiring
-tediously editing a tfstate file or manually writing hundreds of commands.
 
 ## Installation
 
@@ -30,17 +15,13 @@ go install github.com/kassett/tfstate-transfer@latest
 
 ## Usage
 There are two ways to use the ``tfstate-transfer`` program. The first
->>>>>>> 0.1.1-fixing-tag-logic
 of these ways is via the simple CLI interface. 
 When invoking tfstate-transfer, you pass a source directory and a target directory, as follows.
 
 ```shell
-<<<<<<< HEAD
 tfstate-transfer -sourceDir startDirectory -targetDir endDirectory -r module.db
 ```
-=======
-tfstate-transfer --source-dir startDirectory -target-dir endDirectory --r module.db --r module.elb
-```
+
 Optionally, the ``--dry-run`` flag can be passed, which will
 simply print out commands instead of actually executing them.
 
