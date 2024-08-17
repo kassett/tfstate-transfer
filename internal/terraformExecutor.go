@@ -27,7 +27,7 @@ func generateStateFile(sourceDir string) string {
 	return output
 }
 
-func runImport(targetDir string, importObject ImportObject) error {
+func runImport(targetDir string, importObject ImportObject, dryRun bool) (string, error) {
 	defaultError := errors.New("unknown error: try importing manually")
 
 	for _, field := range ImportIdentifierFields {
@@ -37,6 +37,10 @@ func runImport(targetDir string, importObject ImportObject) error {
 		}
 
 		command := fmt.Sprintf("terraform import '%s' '%s'", importObject.targetName, *id)
+		if dryRun {
+			return command, nil
+		}
+
 		output, err := executeCommand(command, targetDir)
 
 		// How to handle errors
@@ -46,21 +50,28 @@ func runImport(targetDir string, importObject ImportObject) error {
 
 		if err != nil {
 			if strings.Contains(output, "Resource already managed by Terraform") {
-				return nil
+				return "", nil
 			} else if strings.Contains(output, "This resource does not support import.") {
-				return errors.New("resource does not implement the import protocol")
+				return "", errors.New("resource does not implement the import protocol")
 			}
 			continue
 		} else {
-			return nil
+			return "", nil
 		}
 	}
-	return defaultError
+	return "", defaultError
 }
 
-func terraformRemoveState(resource string, sourceDir string) {
-	_, err := executeCommand(fmt.Sprintf("terraform state rm '%s'", resource), sourceDir)
-	if err != nil {
-		os.Exit(1)
+func terraformRemoveState(resource string, sourceDir string, dryRun bool) string {
+	command := fmt.Sprintf("terraform state rm '%s'", resource)
+
+	if !dryRun {
+
+		_, err := executeCommand(command, sourceDir)
+		if err != nil {
+			os.Exit(1)
+		}
 	}
+
+	return command
 }

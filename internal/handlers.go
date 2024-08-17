@@ -251,7 +251,7 @@ func Panic(fatalError string) {
 	os.Exit(1)
 }
 
-func (rn *RunHandler) FinishRun() {
+func (rn *RunHandler) PrintFullRun() {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"User Resource", "Source Resource", "Target Resource", "Success", "Error"})
 
