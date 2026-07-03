@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@v14
+        uses: DeterminateSystems/nix-installer-action@v22
 
       - name: Install Node dependencies
         run: nix develop --command pnpm install --frozen-lockfile
