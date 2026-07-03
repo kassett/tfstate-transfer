@@ -14,8 +14,17 @@ jobs:
     name: Changesets release
     runs-on: ubuntu-latest
     steps:
+      - name: Create Kassett PR Bot token
+        id: kassett-pr-bot
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: 4208672
+          private-key: ${{ secrets.KASSETT_PR_BOT_PRIVATE_KEY }}
+
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          token: ${{ steps.kassett-pr-bot.outputs.token }}
 
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v22
@@ -30,4 +39,4 @@ jobs:
           publish: nix develop --command pnpm run release
           createGithubReleases: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.kassett-pr-bot.outputs.token }}
