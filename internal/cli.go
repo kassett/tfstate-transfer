@@ -3,7 +3,6 @@ package internal
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -15,8 +14,8 @@ type Resource struct {
 }
 
 type ConfigFile struct {
-	SourceDir string     `json:"SourceDir"`
-	TargetDir string     `json:"TargetDir"`
+	SourceDir string     `json:"sourceDir"`
+	TargetDir string     `json:"targetDir"`
 	Resources []Resource `json:"resources"`
 }
 
@@ -47,14 +46,9 @@ func UnmarshallConfigFileContent(configFileContent string) (string, string, []st
 }
 
 func OpenConfigFile(configFilePath string) string {
-	file, err := os.Open(configFilePath)
+	byteValue, err := os.ReadFile(configFilePath)
 	if err != nil {
-		Panic(fmt.Sprintf("The configuration file %s does not exist.", configFilePath))
-	}
-
-	byteValue, err := ioutil.ReadAll(file)
-	if err != nil {
-		Panic(fmt.Sprintf("The configuration file %s could not be read..", configFilePath))
+		Panic(fmt.Sprintf("The configuration file %s could not be read.", configFilePath))
 	}
 	return string(byteValue)
 }

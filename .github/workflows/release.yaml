@@ -1,0 +1,36 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    name: Changesets release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v14
+
+      - name: Cache Nix
+        uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: Install Node dependencies
+        run: nix develop --command pnpm install --frozen-lockfile
+
+      - name: Create release PR or publish GitHub release
+        uses: changesets/action@v1
+        with:
+          version: nix develop --command pnpm run version
+          publish: nix develop --command pnpm run release
+          createGithubReleases: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

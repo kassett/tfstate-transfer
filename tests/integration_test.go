@@ -1,11 +1,6 @@
-<<<<<<<< HEAD:internal/integration_test.go
-//go:build tests
-// +build tests
+//go:build integration
 
-package internal
-========
 package tests
->>>>>>>> 0.1.1-fixing-tag-logic:tests/integration_test.go
 
 import (
 	"bytes"

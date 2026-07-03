@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+var runTerraformCommand = executeCommand
+
 func executeCommand(command string, directory string) (string, error) {
 	cmd := exec.Command("bash", "-c", command)
 	cmd.Dir = directory
@@ -20,7 +22,7 @@ func executeCommand(command string, directory string) (string, error) {
 }
 func generateStateFile(sourceDir string) string {
 	command := "terraform state pull"
-	output, err := executeCommand(command, sourceDir)
+	output, err := runTerraformCommand(command, sourceDir)
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -41,7 +43,7 @@ func runImport(targetDir string, importObject ImportObject, dryRun bool) (string
 			return command, nil
 		}
 
-		output, err := executeCommand(command, targetDir)
+		output, err := runTerraformCommand(command, targetDir)
 
 		// How to handle errors
 		// If we can't import by any of our saved properties, we can't delete the state
@@ -67,7 +69,7 @@ func terraformRemoveState(resource string, sourceDir string, dryRun bool) string
 
 	if !dryRun {
 
-		_, err := executeCommand(command, sourceDir)
+		_, err := runTerraformCommand(command, sourceDir)
 		if err != nil {
 			os.Exit(1)
 		}
