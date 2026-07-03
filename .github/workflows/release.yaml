@@ -35,8 +35,10 @@ jobs:
       - name: Create release PR or publish GitHub release
         uses: changesets/action@v1
         with:
+          github-token: ${{ steps.kassett-pr-bot.outputs.token }}
           version: nix develop --command pnpm run version
           publish: nix develop --command pnpm run release
           createGithubReleases: true
+          commitMode: github-api
         env:
           GITHUB_TOKEN: ${{ steps.kassett-pr-bot.outputs.token }}
