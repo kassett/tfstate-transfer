@@ -1,42 +1,42 @@
-name: Format, Lint, Test
+name: Pull Request
 
 on:
   pull_request:
     branches:
-      - master
+      - main
+
+permissions:
+  contents: read
+  pull-requests: read
 
 jobs:
-  prepare:
-    name: Format, Lint, Test
-    permissions: 'write-all'
+  checks:
+    name: Format, lint, test
     runs-on: ubuntu-latest
     steps:
-
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Install Docker Compose
-        uses: ndeloof/install-compose-action@v0.0.1
-        with:
-          version: v2.1.0
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v22
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+      - name: Install Node dependencies
+        run: nix develop --command pnpm install --frozen-lockfile
 
-      - name: Setup Golang
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.22'
-          check-latest: true
-
-      - name: Setup docker compose
-        shell: bash
-        run: docker-compose up -d
-
-      - name: Run tests
-        shell: bash
+      - name: Check for changeset
         run: |
-          go test ./internal -v
-          go test ./tests -v
+          if [[ "${{ github.head_ref }}" == changeset-release/* ]]; then
+            exit 0
+          fi
+
+          changed_files="$(git diff --name-only origin/main...HEAD)"
+          code_changes="$(printf '%s\n' "$changed_files" | grep -Ev '^(README\.md|CONTRIBUTING\.md|CHANGELOG\.md|docs/|\.github/)' || true)"
+
+          if [[ -n "$code_changes" ]]; then
+            nix develop --command pnpm changeset status --since=origin/main
+          fi
+
+      - name: Run CI checks
+        run: nix develop --command make ci

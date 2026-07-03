@@ -1,0 +1,70 @@
+name: Integration
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  schedule:
+    - cron: "17 5 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  integration:
+    name: Terraform integration tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        terraform-version:
+          - "1.13.5"
+          - "1.14.3"
+          - "1.15.7"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v22
+
+      - name: Install Terraform ${{ matrix.terraform-version }}
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ matrix.terraform-version }}
+          terraform_wrapper: false
+
+      - name: Select matrix Terraform
+        run: |
+          terraform_bin_dir="$(dirname "$(command -v terraform)")"
+          echo "TERRAFORM_BIN_DIR=${terraform_bin_dir}" >> "$GITHUB_ENV"
+
+      - name: Start LocalStack
+        run: nix develop --command make localstack-up
+
+      - name: Wait for LocalStack
+        run: |
+          for i in {1..60}; do
+            if curl -fsS http://localhost:4566/_localstack/health >/dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose logs localstack
+          exit 1
+
+      - name: Run integration tests
+        run: nix develop --command bash -lc 'export PATH="${TERRAFORM_BIN_DIR}:$PATH"; terraform version; make test-integration'
+
+      - name: Upload LocalStack logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: localstack-logs
+          path: |
+            /tmp/localstack
+
+      - name: Stop LocalStack
+        if: always()
+        run: nix develop --command make localstack-down

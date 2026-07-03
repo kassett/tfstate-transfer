@@ -1,44 +1,61 @@
 # tfstate-transfer
 
-`tfstate-transfer` is a CLI tool for transferring Terraform resources from one environment to another. 
-This tool simplifies the process of moving state files and resources between different Terraform workspaces or environments, 
-making it easier to manage infrastructure changes and migrations.
+`tfstate-transfer` is a CLI for moving Terraform resources from one state to another. It imports matching resources into a target Terraform directory and removes successfully transferred top-level resources from the source state.
 
 ## Installation
 
-To install `tfstate-transfer`, you need to have Go installed. 
-Then, you can build and install the tool using the following command:
+Install the latest tagged version with Go:
 
 ```bash
 go install github.com/kassett/tfstate-transfer@latest
 ```
 
-## Usage
-There are two ways to use the ``tfstate-transfer`` program. The first
-of these ways is via the simple CLI interface. 
-When invoking tfstate-transfer, you pass a source directory and a target directory, as follows.
+Or build from this repository:
 
-```shell
-tfstate-transfer -sourceDir startDirectory -targetDir endDirectory -r module.db
+```bash
+go build ./...
 ```
 
-Optionally, the ``--dry-run`` flag can be passed, which will
-simply print out commands instead of actually executing them.
+## Usage
 
-It is also worth noting that if a resource has a different name
-in the target directory, that can be specified by separating with a colon, as follows:
-``--r module.db_source:module.db_target``
+Transfer resources by passing a source directory, a target directory, and one or more resource names:
 
-The other way to execute ``tfstate-transfer`` is to pass a JSON configuration file 
-via the ``--config-dir`` argument.
-This configuration file must contain a ``sourceDir``, a ``targetDir``,
-and a list of ``resources``.
-The list of resources is a map with a ``source`` resource and a ``target`` resource.
-An example is shown below:
+```bash
+tfstate-transfer \
+  --source-dir ./source \
+  --target-dir ./target \
+  --r module.db
+```
+
+If the target resource has a different address, separate the source and target with a colon:
+
+```bash
+tfstate-transfer \
+  --source-dir ./source \
+  --target-dir ./target \
+  --r module.db_source:module.db_target
+```
+
+Preview Terraform commands without importing or removing state:
+
+```bash
+tfstate-transfer \
+  --source-dir ./source \
+  --target-dir ./target \
+  --r module.db \
+  --dry-run
+```
+
+You can also pass a JSON config file:
+
+```bash
+tfstate-transfer --config-file ./transfer.json
+```
+
 ```json
 {
-  "sourceDir": "/Users/sourceDirectory",
-  "targetDir": "/Users/targetDirectory",
+  "sourceDir": "./source",
+  "targetDir": "./target",
   "resources": [
     {
       "source": "module.db_source",
@@ -47,8 +64,51 @@ An example is shown below:
   ]
 }
 ```
-### Example Flow
-1. Make a new Terraform environment
-2. Copy the desired resources to the new .tf files. <b>DO NOT APPLY</b>
-3. Using the CLI, run tfstate-transfer, specifying the specific resources to transfer.
-4. Manually import any resources that failed automatic import.
+
+## Development
+
+The recommended development environment uses Nix:
+
+```bash
+nix develop
+make ci
+```
+
+The dev shell provides Go 1.26, Terraform, `golangci-lint`, Node, `pnpm`, `pnpx`, and Docker Compose. Without Nix, install those tools locally and run the same Make targets.
+
+Common commands:
+
+```bash
+make fmt
+make lint
+make test
+make build
+make ci
+```
+
+Integration tests require Docker and LocalStack:
+
+```bash
+make localstack-up
+make test-integration
+make localstack-down
+```
+
+`make test` runs fast unit tests only. `make test-integration` runs Terraform/LocalStack tests with the `integration` build tag.
+
+## Releases
+
+This repo uses Changesets for changelog entries, release PRs, tags, and GitHub release notes. Add a changeset for user-visible code changes:
+
+```bash
+pnpx changeset
+```
+
+CI uses the committed `pnpm-lock.yaml` and runs Changesets with `pnpm`. Merging the generated Changesets release PR updates `CHANGELOG.md`, tags the release, and creates GitHub release notes. Releases do not publish an npm package.
+
+## Example Flow
+
+1. Create the new Terraform environment.
+2. Copy the desired resources to the target `.tf` files. Do not apply the target configuration first.
+3. Run `tfstate-transfer` with the resources to move.
+4. Manually import any resources that Terraform reports as unsupported or ambiguous.
