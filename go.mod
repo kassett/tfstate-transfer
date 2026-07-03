@@ -1,6 +1,6 @@
 module github.com/kassett/tfstate-transfer
 
-go 1.22.4
+go 1.26
 
 require (
 	github.com/olekukonko/tablewriter v0.0.5

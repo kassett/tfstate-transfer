@@ -74,7 +74,7 @@ nix develop
 make ci
 ```
 
-The dev shell provides Go, Terraform, `golangci-lint`, Node, `pnpm`, `pnpx`, and Docker Compose. Without Nix, install those tools locally and run the same Make targets.
+The dev shell provides Go 1.26, Terraform, `golangci-lint`, Node, `pnpm`, `pnpx`, and Docker Compose. Without Nix, install those tools locally and run the same Make targets.
 
 Common commands:
 
@@ -112,4 +112,3 @@ CI uses the committed `pnpm-lock.yaml` and runs Changesets with `pnpm`. Merging 
 2. Copy the desired resources to the target `.tf` files. Do not apply the target configuration first.
 3. Run `tfstate-transfer` with the resources to move.
 4. Manually import any resources that Terraform reports as unsupported or ambiguous.
-

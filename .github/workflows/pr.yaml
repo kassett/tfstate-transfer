@@ -34,11 +34,11 @@ jobs:
             exit 0
           fi
 
-          changed_files="$(git diff --name-only origin/master...HEAD)"
+          changed_files="$(git diff --name-only origin/main...HEAD)"
           code_changes="$(printf '%s\n' "$changed_files" | grep -Ev '^(README\.md|CONTRIBUTING\.md|CHANGELOG\.md|docs/|\.github/)' || true)"
 
           if [[ -n "$code_changes" ]]; then
-            nix develop --command pnpm changeset status --since=origin/master
+            nix develop --command pnpm changeset status --since=origin/main
           fi
 
       - name: Run CI checks

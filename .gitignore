@@ -23,10 +23,12 @@ go.work.sum
 
 # Local development caches
 .cache/
+.direnv/
 .go/
 
 # Node dependencies
 node_modules/
+.pnpm-store/
 
 # IntelliJ
 .idea

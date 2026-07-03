@@ -8,7 +8,7 @@ Use the Nix dev shell when possible:
 nix develop
 ```
 
-This provides Go, Terraform, `golangci-lint`, Node, `pnpm`, `pnpx`, and Docker Compose. If you do not use Nix, install those tools locally.
+This provides Go 1.26, Terraform, `golangci-lint`, Node, `pnpm`, `pnpx`, and Docker Compose. If you do not use Nix, install those tools locally.
 
 ## Checks
 
@@ -47,5 +47,4 @@ Documentation-only and CI-only changes do not need a changeset. The release work
 
 ## Pull Requests
 
-Before opening a pull request, run `make ci`. PR CI runs formatting, vet, linting, unit tests, build checks, and a Changesets status check for code changes. Terraform/LocalStack integration tests run on pushes to `master`, manually, and nightly.
-
+Before opening a pull request, run `make ci`. PR CI runs formatting, vet, linting, unit tests, build checks, and a Changesets status check for code changes. Terraform/LocalStack integration tests run on pushes to `main`, manually, and nightly.

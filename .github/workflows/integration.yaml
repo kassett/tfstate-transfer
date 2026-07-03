@@ -15,6 +15,13 @@ jobs:
   integration:
     name: Terraform integration tests
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        terraform-version:
+          - "1.13.5"
+          - "1.14.3"
+          - "1.15.7"
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -24,6 +31,17 @@ jobs:
 
       - name: Cache Nix
         uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: Install Terraform ${{ matrix.terraform-version }}
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ matrix.terraform-version }}
+          terraform_wrapper: false
+
+      - name: Select matrix Terraform
+        run: |
+          terraform_bin_dir="$(dirname "$(command -v terraform)")"
+          echo "TERRAFORM_BIN_DIR=${terraform_bin_dir}" >> "$GITHUB_ENV"
 
       - name: Start LocalStack
         run: nix develop --command make localstack-up
@@ -40,7 +58,7 @@ jobs:
           exit 1
 
       - name: Run integration tests
-        run: nix develop --command make test-integration
+        run: nix develop --command bash -lc 'export PATH="${TERRAFORM_BIN_DIR}:$PATH"; terraform version; make test-integration'
 
       - name: Upload LocalStack logs
         if: failure()
@@ -53,4 +71,3 @@ jobs:
       - name: Stop LocalStack
         if: always()
         run: nix develop --command make localstack-down
-

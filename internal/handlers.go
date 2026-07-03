@@ -50,9 +50,6 @@ type RunHandler struct {
 
 	// The results of the run for output
 	importResults []ImportRunResult
-
-	// fatal error
-	fatal error
 }
 
 func checkIfResourceBelongsToState(resourceName string, resourceMapping map[string]string) (bool, string, string) {
@@ -187,7 +184,7 @@ func (rn *RunHandler) GetTopLevelFromResource(sourceResourceName string) (string
 			}
 		}
 	}
-	return "", errors.New(fmt.Sprintf("resource %s was not found", sourceResourceName))
+	return "", fmt.Errorf("resource %s was not found", sourceResourceName)
 }
 
 func (rn *RunHandler) GetNextResource() (*ImportObject, error) {
